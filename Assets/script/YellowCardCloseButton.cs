@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class yellowCardExit : MonoBehaviour 
+public class YellowCardCloseButton : MonoBehaviour 
 {
 	void OnMouseDown () 
     {
-        yellowCard.show = false;
+        YellowCard.Hide();
 	}
 }

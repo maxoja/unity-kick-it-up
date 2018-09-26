@@ -303,8 +303,8 @@ public class manager : MonoBehaviour
 
             if (manager.mode == SceneMode.Menu)
             {
-                if (yellowCard.show)
-                    yellowCard.show = false;
+                if (YellowCard.IsShowing())
+                    YellowCard.Hide();
                 else
                     Application.Quit();
             }
@@ -523,7 +523,7 @@ public class manager : MonoBehaviour
         if (PlayerPrefs.GetInt("gamePlayed") >= 250)
             ggManager.UnlockAchievement(7);
 
-        yellowCard.show = false;
+        YellowCard.Hide();
         PlayerPrefs.SetInt("lastGameType", n - 1);
 
         startTime = Time.time;
@@ -591,11 +591,8 @@ public class manager : MonoBehaviour
                 ggManager.UnlockAchievement(ct);
         }
 
-        yellowCard.n = int.Parse(modeSub.ToString());
-        yellowCard.kick = ballHit;
-        yellowCard.score = score;
-        yellowCard.time = Time.time - startTime;
-        yellowCard.show = true;
+        YellowCard.SetCardContent(int.Parse(modeSub.ToString()), ballHit, score, Time.time - startTime);
+        YellowCard.Show();
 
         button.enable = true;
         modeSub = '1';

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 
-public class yellowCardShare : MonoBehaviour {
+public class YellowCardShareButton : MonoBehaviour {
 
 	// Use this for initialization
 	void OnMouseDown () 
