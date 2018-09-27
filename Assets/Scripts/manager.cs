@@ -458,7 +458,7 @@ public class manager : MonoBehaviour
                     }
 
                     if (level == 4)
-                        ggManager.UnlockAchievement(4);
+                        GooglePlayServiceManager.UnlockAchievement(4);
                 }
         }
         else
@@ -499,7 +499,7 @@ public class manager : MonoBehaviour
     {
         if (Social.Active.localUser.authenticated)
         {
-            ggManager.UnlockAchievement(5);
+            GooglePlayServiceManager.UnlockAchievement(5);
         }
         mode = SceneMode.Menu;
 
@@ -519,9 +519,9 @@ public class manager : MonoBehaviour
     {
         PlayerPrefs.SetInt("gamePlayed", PlayerPrefs.GetInt("gamePlayed") + 1);
         if (PlayerPrefs.GetInt("gamePlayed") >= 100)
-            ggManager.UnlockAchievement(6);
+            GooglePlayServiceManager.UnlockAchievement(6);
         if (PlayerPrefs.GetInt("gamePlayed") >= 250)
-            ggManager.UnlockAchievement(7);
+            GooglePlayServiceManager.UnlockAchievement(7);
 
         YellowCard.Hide();
         PlayerPrefs.SetInt("lastGameType", n - 1);
@@ -580,7 +580,7 @@ public class manager : MonoBehaviour
         if (score > PlayerPrefs.GetInt("highScore" + n.ToString()))
             PlayerPrefs.SetInt("highScore" + n.ToString(), score);
 
-        ggManager.postScore(n);
+        GooglePlayServiceManager.postScore(n);
     }
     static public void StopGame()
     {
@@ -588,7 +588,7 @@ public class manager : MonoBehaviour
         if (Social.Active.localUser.authenticated)
         {
             for (int ct = 1; ct <= PlayerPrefs.GetInt("clear"); ct++)
-                ggManager.UnlockAchievement(ct);
+                GooglePlayServiceManager.UnlockAchievement(ct);
         }
 
         YellowCard.SetCardContent(int.Parse(modeSub.ToString()), ballHit, score, Time.time - startTime);

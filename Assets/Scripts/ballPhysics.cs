@@ -16,13 +16,17 @@ public class ballPhysics : MonoBehaviour
     public Vector3 normalSize;
 
     public ballMesh mesh;
-    //public Rigidbody mesh;
     public ballBg bg;
-    public CircleCollider2D collider;
+    private CircleCollider2D collid;
 
     public bool remove = false;
 
-	void Start ()
+    private void Awake()
+    {
+        collid = GetComponent<CircleCollider2D>();
+    }
+
+    void Start ()
     {
         if (startBall)
         {
@@ -68,27 +72,26 @@ public class ballPhysics : MonoBehaviour
         //Left Edge
         if (Camera.main.WorldToScreenPoint(transform.position + Vector3.left * radius).x < 0 && GetComponent<Rigidbody2D>().velocity.x < 0)
         {
-            soundManager.CallFunction(1, 2);
+            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * -1, GetComponent<Rigidbody2D>().velocity.y);
         }
 
         if (Camera.main.WorldToScreenPoint(transform.position + Vector3.right * radius).x > Screen.width && GetComponent<Rigidbody2D>().velocity.x > 0)
         {
-            soundManager.CallFunction(1, 2);
+            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * -1, GetComponent<Rigidbody2D>().velocity.y);
         }
 
         if (Camera.main.WorldToScreenPoint(transform.position + Vector3.up * radius).y > Screen.height && GetComponent<Rigidbody2D>().velocity.y > 0)
         {
-            soundManager.CallFunction(1, 2);
+            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, GetComponent<Rigidbody2D>().velocity.y * -1);
         }
 
         //Buttom Edge
         if (transform.position.y < buttom && GetComponent<Rigidbody2D>().velocity.y < 0)
         {
-            //soundManager.CallFunction(1, 4);
-            soundManager.CallFunction(1, 5);
+            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.LongWhistle);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x*0.5f, GetComponent<Rigidbody2D>().velocity.y * -0.5f);
             mesh.angularVelo *= 30;
             transform.position = new Vector3(transform.position.x, buttom, 0);
@@ -99,7 +102,7 @@ public class ballPhysics : MonoBehaviour
 
     void RemoveBall()
     {
-        collider.isTrigger = true;
+        collid.isTrigger = true;
 
         GetComponent<Rigidbody2D>().isKinematic = true;
         GetComponent<Rigidbody2D>().gravityScale = 0;
@@ -127,13 +130,13 @@ public class ballPhysics : MonoBehaviour
     {
         if (collision.gameObject.tag == "ball")
         {
-            soundManager.CallFunction(1, 2);
+            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
         }
     }
 
     public void StartKick()
     {
-        soundManager.CallFunction(1, 0);
+        soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.PerfectKick);
         
         startCircle.remove = true;
 
@@ -158,21 +161,21 @@ public class ballPhysics : MonoBehaviour
                 GetComponent<ParticleSystem>().Play();
                 manager.combo++;
 
-                soundManager.CallFunction(1, 0);
+            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.PerfectKick);
             }
             else
             {
                 manager.combo = 1;
-                soundManager.CallFunction(1, 1);
+            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.BallClashed);
             }
 
             GetComponent<Rigidbody2D>().velocity = new Vector2(sin, cos) * sVelo;
 
             if (manager.ballHit == 150)
-                ggManager.UnlockAchievement(8);
+                GooglePlayServiceManager.UnlockAchievement(8);
             if (manager.ballHit == 500)
-                ggManager.UnlockAchievement(9);
+                GooglePlayServiceManager.UnlockAchievement(9);
             if (manager.ballHit == 1000)
-                ggManager.UnlockAchievement(10);
+                GooglePlayServiceManager.UnlockAchievement(10);
     }
 }

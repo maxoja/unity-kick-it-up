@@ -6,7 +6,7 @@ using System.Collections.Generic;
 //using UnityEngine.SocialPlatforms;
 //using GooglePlayGames.BasicApi;
 
-public class ggManager : MonoBehaviour 
+public class GooglePlayServiceManager : MonoBehaviour 
 {
     static public bool suc = false;
 
@@ -28,7 +28,7 @@ public class ggManager : MonoBehaviour
 
             if (suc)
             {
-                ggManager.UnlockAchievement(5);
+                GooglePlayServiceManager.UnlockAchievement(5);
 
                 for (int ct1 = 1; ct1 <= 4; ct1++)
                 {

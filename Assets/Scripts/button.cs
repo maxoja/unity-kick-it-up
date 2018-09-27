@@ -44,15 +44,15 @@ public class button : MonoBehaviour
                     return;
             case 5: //achievement
                     if (!Social.Active.localUser.authenticated)
-                        ggManager.SignIn();
+                        GooglePlayServiceManager.SignIn();
                     else
-                        ggManager.showAchievement();
+                        GooglePlayServiceManager.showAchievement();
                     return;
             case 6: //leaderboard
                     if (!Social.Active.localUser.authenticated)
-                        ggManager.SignIn();
+                        GooglePlayServiceManager.SignIn();
                     else
-                        ggManager.showLeaderBoard();
+                        GooglePlayServiceManager.showLeaderBoard();
                     return;
         }
 

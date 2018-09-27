@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class bgmPlayer : MonoBehaviour 
+public class BGMPlayer: MonoBehaviour 
 {
-    public bool play = false;
+    private bool playing = false;
 
 	void Update () 
     {
-        if (play)
+        if (playing)
         {
             GetComponent<AudioSource>().volume += Time.deltaTime / 2;
         }
@@ -21,14 +21,19 @@ public class bgmPlayer : MonoBehaviour
         }
 	}
 
-    public void Play()
+    public void FadePlay()
     {
         GetComponent<AudioSource>().Play();
-        play = true;
+        playing = true;
     }
 
-    public void Stop()
+    public void FadeStop()
     {
-        play = false;
+        playing = false;
+    }
+
+    public bool IsPlaying()
+    {
+        return playing;
     }
 }

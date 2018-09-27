@@ -4,78 +4,96 @@ using System.Collections.Generic;
 
 public class soundManager : MonoBehaviour 
 {
-    static public List<int> fCall = new List<int>();
-    static public List<int> fParam = new List<int>();
-
-    int playingCount = 0;
+    public BGMPlayer bgmSource;
     public GameObject[] sources;
-    public bgmPlayer[] bgmSources;
-    public AudioClip[] clips;
+    public SoundItem[] clips;
+
+    static private Queue<Action> callQueue = new Queue<Action>();
+    static private Queue<SoundTag> paramQueue = new Queue<SoundTag>();
+
+    private int playingCount = 0;
 	
 	void Update () 
     {
-        foreach (GameObject s in sources)
+        while (callQueue.Count > 0)
         {
-            playingCount = 0;
+            Action action = callQueue.Dequeue();
+            SoundTag param = paramQueue.Dequeue();
 
-            if (s.GetComponent<AudioSource>().isPlaying)
-                playingCount++;
-        }
-
-        while (fCall.Count > 0)
-        {
-            switch (fCall[0])
+            switch (action)
             {
-                case 1: PlaySound(fParam[0]); break;
-                case 2: PlayBGM(fParam[0]); break;
-                case 3: StopAll(); break;
+                case Action.PlaySound: PlaySound(param); break;
+                case Action.PlayBGM: PlayBGM(); break;
+                case Action.StopAll: StopAll(); break;
             }
-
-            fCall.RemoveAt(0);
-            fParam.RemoveAt(0);
         }
 	}
 
-    static public void CallFunction(int id,int param)
+    static public void CallFunction(Action action, SoundTag tag)
     {
-        fCall.Add(id);
-        fParam.Add(param);
+        callQueue.Enqueue(action);
+        paramQueue.Enqueue(tag);
     }
 
-    void PlaySound(int n)
+    private void PlaySound(SoundTag soundTag)
     {
         foreach (GameObject s in sources)
         {
             if (!s.GetComponent<AudioSource>().isPlaying)
             {
-                s.GetComponent<AudioSource>().clip = clips[n];
+                s.GetComponent<AudioSource>().clip = GetClip(soundTag);
                 s.GetComponent<AudioSource>().Play();
 
                 break;
             }
-
         }
     }
 
-    void PlayBGM(int index)
+    private AudioClip GetClip(SoundTag soundTag)
     {
-        foreach (bgmPlayer b in bgmSources)
-        {
-            b.Stop();
-        }
-
-        bgmSources[index].Play();
+        foreach (SoundItem s in clips)
+            if (s.tag == soundTag)
+                return s.clip;
+        
+        return null;
     }
 
-    void StopAll()
+    private void PlayBGM()
     {
+        bgmSource.FadeStop();
+        bgmSource.FadePlay();
+    }
+
+    private void StopAll()
+    {
+        bgmSource.FadeStop();
+
         foreach (GameObject g in sources)
-        {
             g.GetComponent<AudioSource>().Stop();
-        }
-        foreach(bgmPlayer b in bgmSources)
-        {
-            b.Stop();
-        }
+    }
+
+    [System.Serializable]
+    public class SoundItem
+    {
+        public SoundTag tag;
+        public AudioClip clip;
+    }
+
+    public enum SoundTag
+    {
+        PerfectKick,
+        FairKick,
+        BallClashed,
+        CollectWhistle,
+        LongWhistle,
+
+        None,
+    }
+
+    public enum Action
+    {
+        PlaySound,
+        PlayBGM,
+        StopAll,
     }
 }
