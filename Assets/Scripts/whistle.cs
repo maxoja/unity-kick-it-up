@@ -1,45 +1,45 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class whistle : MonoBehaviour 
+public class Whistle : MonoBehaviour 
 {
-    public float size = 0.35f;
-    public SpriteRenderer sRend;
-    float x = 0;
-    float angle = 0;
-    int omeg = 15;
+    private SpriteRenderer sRend;
 
-    public bool remove = false;
+    private const float size = 0.25f;
+    private const float swingAngle = 15;
+    private const float angularOffset = 5;
+    private const float scalingSpeed = 5;
+    private const float swingingSpeed = 10;
 
-    Color oldCamColor;
+    private float x = 0;
+    private Color oldCamColor;
+    private bool toBeDestroyed = false;
 
-	void Start () 
+    private void Awake()
     {
-        transform.localScale = Vector3.zero;
-        SetColor();
+        sRend = GetComponent<SpriteRenderer>();
+    }
+
+    private void Start () 
+    {
+        ScaleToZero();
+        UpdateColor();
 	}
 	
-	void Update ()
+	private void Update ()
     {
-        if (oldCamColor != Camera.main.backgroundColor)
-        {//set oldcamColor inside setcolor
-            SetColor();
-        }
+        UpdateColor();
+        UpdateScale();
+        UpdateRotation();
 
-        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * size, Time.deltaTime * 5);
-
-
-        x += Time.deltaTime * 10;
-        angle = omeg *Mathf.Sin(x) + 5;
-        transform.eulerAngles = new Vector3(0, 0, angle);
-
-        if (remove)
+        if (toBeDestroyed)
         {
+            StopAllCoroutines();
             Destroy(gameObject);
         }
 	}
 
-    void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "ballAura")
         {
@@ -50,23 +50,33 @@ public class whistle : MonoBehaviour
             fxManager.CallFunction(1, transform.position, "+" + (manager.combo * 3).ToString());
 
             manager.score += manager.combo * 3;
-            manager.removeWhistle(gameObject);
+            manager.RemoveOneWhistle(this);
         }
     }
 
-    void SetColor()
+    public void TagToDestroy()
     {
+        toBeDestroyed = true;
+    }
+
+    private void ScaleToZero()
+    {
+        transform.localScale = Vector3.zero;
+    }
+
+    void UpdateColor()
+    {
+        if (oldCamColor == Camera.main.backgroundColor)
+            return;
+        
         oldCamColor = Camera.main.backgroundColor;
 
-        float[] color = new float[3];
         float min = 100;
         int minDex = -1;
         float max = 0;
         int maxDex = -1;
 
-        color[0] = oldCamColor.r;
-        color[1] = oldCamColor.g;
-        color[2] = oldCamColor.b;
+        Color color = oldCamColor;
 
         for (int ct1 = 0; ct1 < 3; ct1++)
         {
@@ -85,15 +95,33 @@ public class whistle : MonoBehaviour
 
         color[minDex] = 0;
 
-        float rat = 1f / color[maxDex];
+        float ratio = 1f / color[maxDex];
         for (int ct1 = 0; ct1 < 3; ct1++)
         {
             if (ct1 != minDex)
             {
-                color[ct1] *= rat;
+                color[ct1] *= ratio;
             }
         }
 
-        sRend.color = new Color(color[0], color[1], color[2], 1);
+        color.a = 1;
+        sRend.color = color;
     }
+
+    private void UpdateScale()
+    {
+        Vector3 oldScale = transform.localScale;
+        Vector3 targetScale = Vector3.one * size;
+        Vector3 updatedScale = Vector3.Lerp(oldScale, targetScale, Time.deltaTime * scalingSpeed);
+
+        transform.localScale = updatedScale;
+    }
+
+    private void UpdateRotation()
+    {
+        x += Time.deltaTime * swingingSpeed;
+        float resultedAngle = swingAngle * Mathf.Sin(x) + angularOffset;
+        transform.eulerAngles = new Vector3(0, 0, resultedAngle);
+    }
+
 }

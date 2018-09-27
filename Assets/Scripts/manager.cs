@@ -38,7 +38,7 @@ public class manager : MonoBehaviour
     static public float topScreenPos, buttomScreenPos, edgeScreenPos;
 
     static public List<GameObject> ballList = new List<GameObject>(3);
-    static public List<GameObject> whistleList = new List<GameObject>();
+    static public List<Whistle> whistleList = new List<Whistle>();
     static public int maxWhistle = 1;
     static public int score = 0;
     static public int ballHit = 0;
@@ -57,7 +57,7 @@ public class manager : MonoBehaviour
     static public GameObject ballPref;
     static public GameObject startBallPref;
     static public GameObject forceUpEffect;
-    static public GameObject whistlePrefs;
+    static public Whistle whistlePrefs;
 
     static public float kickZone = 0;
 
@@ -90,7 +90,7 @@ public class manager : MonoBehaviour
         ballPref = Resources.Load("prefab/ball") as GameObject;
         startBallPref = Resources.Load("prefab/startBall") as GameObject;
         forceUpEffect = Resources.Load("prefab/forceUp") as GameObject;
-        whistlePrefs = Resources.Load("prefab/whistle") as GameObject;
+        whistlePrefs = (Resources.Load("prefab/whistle") as GameObject).GetComponent<Whistle>();
         warmParticle();
 
         LaunchMenu();
@@ -290,7 +290,7 @@ public class manager : MonoBehaviour
 
         if (whistleList.Count < maxWhistle)
         {
-            addWhistle();
+            CreateOneWhistle();
         }
     }
 
@@ -504,7 +504,7 @@ public class manager : MonoBehaviour
         mode = SceneMode.Menu;
 
         stageID = 0;
-        whistleList = new List<GameObject>();
+        whistleList = new List<Whistle>();
         maxWhistle = 1;
         bgColor = stageColor[0];
         floorColor = stageFloorColor[0];
@@ -604,7 +604,7 @@ public class manager : MonoBehaviour
         level = 1;
         ballCt = 1;
         removeAllBall();
-        removeAllWhistle();
+        RemoveAllWhistle();
         LaunchMenu();
     }
 
@@ -662,18 +662,18 @@ public class manager : MonoBehaviour
 
         ballList.Clear();
     }
-    static public void removeAllWhistle()
+    static public void RemoveAllWhistle()
     {
-        while (whistleList.Count > 0)
+        foreach(Whistle whistle in whistleList)
         {
-            whistleList[0].GetComponent<whistle>().remove = true;
-            whistleList.RemoveAt(0);
+            whistle.TagToDestroy();
         }
+        whistleList.Clear();
     }
-    static public void removeWhistle(GameObject wt)
+    static public void RemoveOneWhistle(Whistle whistle)
     {
-        whistleList.Remove(wt);
-        wt.GetComponent<whistle>().remove = true;
+        whistleList.Remove(whistle);
+        whistle.TagToDestroy();
     }
     static public void addBall()
     {
@@ -694,7 +694,7 @@ public class manager : MonoBehaviour
 
         ballList.Add(newBall);
     }
-    static public void addWhistle()
+    static public void CreateOneWhistle()
     {
         int n = 30;
 
@@ -716,7 +716,7 @@ public class manager : MonoBehaviour
                     minDistBall = dist;
             }
 
-            foreach (GameObject g in whistleList)
+            foreach (Whistle g in whistleList)
             {
                 float dist = Vector3.Distance(g.transform.position, pos);
                 if (dist < minDistWhist)
@@ -728,7 +728,7 @@ public class manager : MonoBehaviour
         while ((minDistBall < 1.125f || minDistWhist < 0.9f) && n > 0);
 
         if (minDistBall >= 1.1f && minDistWhist >= 0.9f)
-            whistleList.Add(Instantiate(whistlePrefs, pos, Quaternion.identity) as GameObject);
+            whistleList.Add(Instantiate(whistlePrefs, pos, Quaternion.identity).GetComponent<Whistle>());
     }
 
 
