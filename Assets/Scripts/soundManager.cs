@@ -2,17 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class soundManager : MonoBehaviour 
+public class SoundManager : MonoBehaviour 
 {
-    public BGMPlayer bgmSource;
-    public GameObject[] sources;
     public SoundItem[] clips;
+
+    private AudioPool audioSourcePool;
+    private BGMPlayer bgmSource;
+    private int playingCount = 0;
 
     static private Queue<Action> callQueue = new Queue<Action>();
     static private Queue<SoundTag> paramQueue = new Queue<SoundTag>();
-
-    private int playingCount = 0;
 	
+    void Awake()
+    {
+        audioSourcePool = GetComponentInChildren<AudioPool>();
+        bgmSource = GetComponentInChildren<BGMPlayer>();
+    }
+
 	void Update () 
     {
         while (callQueue.Count > 0)
@@ -37,16 +43,16 @@ public class soundManager : MonoBehaviour
 
     private void PlaySound(SoundTag soundTag)
     {
-        foreach (GameObject s in sources)
-        {
-            if (!s.GetComponent<AudioSource>().isPlaying)
-            {
-                s.GetComponent<AudioSource>().clip = GetClip(soundTag);
-                s.GetComponent<AudioSource>().Play();
+        AudioSource player = audioSourcePool.GetAvailableAudioSource();
 
-                break;
-            }
+        if (player == null)
+        {
+            Debug.LogWarning("there is no available audio source left available");
+            return;
         }
+
+        player.clip = GetClip(soundTag);
+        player.Play();
     }
 
     private AudioClip GetClip(SoundTag soundTag)
@@ -60,16 +66,13 @@ public class soundManager : MonoBehaviour
 
     private void PlayBGM()
     {
-        bgmSource.FadeStop();
         bgmSource.FadePlay();
     }
 
     private void StopAll()
     {
         bgmSource.FadeStop();
-
-        foreach (GameObject g in sources)
-            g.GetComponent<AudioSource>().Stop();
+        audioSourcePool.StopAll();
     }
 
     [System.Serializable]

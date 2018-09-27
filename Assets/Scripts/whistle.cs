@@ -46,7 +46,7 @@ public class whistle : MonoBehaviour
             if (manager.pause)
                 return;
 
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.CollectWhistle);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.CollectWhistle);
             fxManager.CallFunction(1, transform.position, "+" + (manager.combo * 3).ToString());
 
             manager.score += manager.combo * 3;

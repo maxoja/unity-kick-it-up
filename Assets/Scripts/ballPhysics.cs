@@ -72,26 +72,26 @@ public class ballPhysics : MonoBehaviour
         //Left Edge
         if (Camera.main.WorldToScreenPoint(transform.position + Vector3.left * radius).x < 0 && GetComponent<Rigidbody2D>().velocity.x < 0)
         {
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.FairKick);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * -1, GetComponent<Rigidbody2D>().velocity.y);
         }
 
         if (Camera.main.WorldToScreenPoint(transform.position + Vector3.right * radius).x > Screen.width && GetComponent<Rigidbody2D>().velocity.x > 0)
         {
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.FairKick);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * -1, GetComponent<Rigidbody2D>().velocity.y);
         }
 
         if (Camera.main.WorldToScreenPoint(transform.position + Vector3.up * radius).y > Screen.height && GetComponent<Rigidbody2D>().velocity.y > 0)
         {
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.FairKick);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, GetComponent<Rigidbody2D>().velocity.y * -1);
         }
 
         //Buttom Edge
         if (transform.position.y < buttom && GetComponent<Rigidbody2D>().velocity.y < 0)
         {
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.LongWhistle);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.LongWhistle);
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x*0.5f, GetComponent<Rigidbody2D>().velocity.y * -0.5f);
             mesh.angularVelo *= 30;
             transform.position = new Vector3(transform.position.x, buttom, 0);
@@ -130,13 +130,13 @@ public class ballPhysics : MonoBehaviour
     {
         if (collision.gameObject.tag == "ball")
         {
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.FairKick);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.FairKick);
         }
     }
 
     public void StartKick()
     {
-        soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.PerfectKick);
+        SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.PerfectKick);
         
         startCircle.remove = true;
 
@@ -161,12 +161,12 @@ public class ballPhysics : MonoBehaviour
                 GetComponent<ParticleSystem>().Play();
                 manager.combo++;
 
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.PerfectKick);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.PerfectKick);
             }
             else
             {
                 manager.combo = 1;
-            soundManager.CallFunction(soundManager.Action.PlaySound, soundManager.SoundTag.BallClashed);
+            SoundManager.CallFunction(SoundManager.Action.PlaySound, SoundManager.SoundTag.BallClashed);
             }
 
             GetComponent<Rigidbody2D>().velocity = new Vector2(sin, cos) * sVelo;
