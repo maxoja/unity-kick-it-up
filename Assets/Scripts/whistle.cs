@@ -15,6 +15,11 @@ public class Whistle : MonoBehaviour
     private Color oldCamColor;
     private bool toBeDestroyed = false;
 
+    public void TagToDestroy()
+    {
+        toBeDestroyed = true;
+    }
+
     private void Awake()
     {
         sRend = GetComponent<SpriteRenderer>();
@@ -54,58 +59,55 @@ public class Whistle : MonoBehaviour
         }
     }
 
-    public void TagToDestroy()
-    {
-        toBeDestroyed = true;
-    }
-
     private void ScaleToZero()
     {
         transform.localScale = Vector3.zero;
     }
 
-    void UpdateColor()
+    private void UpdateColor()
     {
         if (oldCamColor == Camera.main.backgroundColor)
             return;
         
         oldCamColor = Camera.main.backgroundColor;
+        sRend.color = CalculateBrightColor(oldCamColor);
+    }
 
-        float min = 100;
-        int minDex = -1;
-        float max = 0;
-        int maxDex = -1;
+    private void FindWeakestStrongestChannel(Color color, out int weakestIndex, out int strongestIndex)
+    {
+        weakestIndex = 0;
+        strongestIndex = 0;
+        float weakestValue = color[weakestIndex];
+        float strongestValue = color[strongestIndex];
 
-        Color color = oldCamColor;
-
-        for (int ct1 = 0; ct1 < 3; ct1++)
+        for (int i = 1; i < 3; i++)
         {
-            if (color[ct1] > max)
+            if (color[i] > strongestValue)
             {
-                max = color[ct1];
-                maxDex = ct1;
+                strongestValue = color[i];
+                strongestIndex = i;
             }
 
-            if (color[ct1] < min)
+            if (color[i] < weakestValue)
             {
-                min = color[ct1];
-                minDex = ct1;
+                weakestValue = color[i];
+                weakestIndex = i;
             }
         }
+    }
 
-        color[minDex] = 0;
+    private Color CalculateBrightColor(Color baseColor)
+    {
+        int strongestChannel, weakestChannel;
+        FindWeakestStrongestChannel(baseColor, out weakestChannel, out strongestChannel);
 
-        float ratio = 1f / color[maxDex];
-        for (int ct1 = 0; ct1 < 3; ct1++)
-        {
-            if (ct1 != minDex)
-            {
-                color[ct1] *= ratio;
-            }
-        }
+        Color newColor = baseColor;
+        newColor[weakestChannel] = 0;
+        newColor[(0 + 1 + 2) - (weakestChannel + strongestChannel)] *= 1f / newColor[strongestChannel];
+        newColor[strongestChannel] = 1;
+        newColor.a = 1;
 
-        color.a = 1;
-        sRend.color = color;
+        return newColor;
     }
 
     private void UpdateScale()
