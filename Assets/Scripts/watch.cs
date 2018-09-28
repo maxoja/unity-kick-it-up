@@ -36,7 +36,7 @@ public class watch : MonoBehaviour
         transform.position = new Vector2(posX, posY);
 
         Vector3 offset = Vector3.up * textGap;
-        textMesh.transform.position += offset;
+        textMesh.transform.position = transform.position - offset;
     }
 
     void UpdateText()
